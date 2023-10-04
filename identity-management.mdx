@@ -1,0 +1,46 @@
+---
+title: "User Management"
+---
+
+It is necessary to uniquely identify users to track their journey within Superwall.
+
+### Anonymous Users
+
+Superwall automatically generates a random user ID that persists internally until the user deletes/reinstalls your app.
+
+You can call `Superwall.shared.reset()` to reset this ID and clear any paywall assignments.
+
+### Identified Users
+
+If you use your own user management system, call `identify(userId:options:)` when you have a user's identity. This will alias your `userId` with the anonymous Superwall ID enabling us to load the user’s assigned paywalls.
+
+Calling `Superwall.shared.reset()` will reset the on-device userId to a random ID and clear the paywall assignments.
+
+SwiftObjective-C
+
+`// After retrieving a user's ID, e.g. from logging in or creating an account
+Superwall.shared.identify(userId: user.id)
+
+// When the user signs out
+Superwall.shared.reset()
+`
+
+`// After retrieving a user's ID, e.g. from logging in or creating an account
+[[Superwall sharedInstance] identifyWithUserId:user.id];
+
+// When the user signs out
+[[Superwall sharedInstance] resetWithCompletionHandler:completion];
+`
+
+> 📘
+> 
+> Advanced Use Case
+> 
+> You can supply an `IdentityOptions` object, whose property `restorePaywallAssignments` you can set to `true`. This tells the SDK to wait to restore paywall assignments from the server before presenting any paywalls. This should only be used in advanced use cases. If you expect users of your app to switch accounts or delete/reinstall a lot, you'd set this when users log in to an existing account.
+
+### Best Practices for a Unique User ID
+
+* Do NOT make your User IDs guessable – they are public facing.
+* Do NOT set emails as User IDs – this isn't GDPR compliant.
+* Do NOT set IDFA or DeviceIds as User IDs – these are device specific / easily rotated by the operating system.
+* Do NOT hardcode strings as User IDs – this will cause every user to be treated as the same user by Superwall.

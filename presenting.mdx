@@ -1,0 +1,145 @@
+---
+title: "Retrieving and Presenting a Paywall Yourself"
+---
+
+If you want complete control over the paywall presentation process, you can use `getPaywall(forEvent:params:paywallOverrides:delegate:)`. This returns the `UIViewController` subclass `PaywallViewController`, which you can then present however you like. The following is code is how you'd mimic [register](/docs/feature-gating):
+
+SwiftObjective-C
+
+`final class MyViewController: UIViewController {
+  private func presentPaywall() async {
+    do {
+      // 1
+  	  let paywallVc = try await Superwall.shared.getPaywall(
+        forEvent: "campaign_trigger",
+        delegate: self
+      )
+   	  self.present(paywallVc, animated: true)
+    } catch let skippedReason as PaywallSkippedReason {
+      // 2
+      switch skippedReason {
+       case .holdout,
+       .noRuleMatch,
+       .eventNotFound,
+       .userIsSubscribed:
+         break
+       }
+    } catch {
+      // 3
+      print(error)
+    }
+  }
+
+  private func launchFeature() {
+    // Insert code to launch a feature that's behind your paywall.
+  }
+}
+
+// 4
+extension MyViewController: PaywallViewControllerDelegate {
+  func paywall(
+    _ paywall: PaywallViewController,
+    didFinishWith result: PaywallResult,
+    shouldDismiss: Bool
+  ) {
+    if shouldDismiss {
+      paywall.dismiss(animated: true)
+    }
+
+    switch result {
+    case .purchased,
+      .restored:
+      launchFeature()
+    case .declined:
+      let closeReason = paywall.info.closeReason
+      let featureGating = paywall.info.featureGatingBehavior
+      if closeReason != .forNextPaywall && featureGating == .nonGated {
+        launchFeature()
+      }
+    }
+  }
+}
+`
+
+`@interface MyViewController : UIViewController
+
+- (void)presentPaywall;
+
+@end
+
+@interface MyViewController () <SWKPaywallViewControllerDelegate>
+
+@end
+
+@implementation MyViewController
+
+- (void)presentPaywall {
+  // 1
+  [[Superwall sharedInstance] getPaywallForEvent:@"campaign_trigger" params:nil paywallOverrides:nil delegate:self completion:^(SWKGetPaywallResult * _Nonnull result) {
+    if (result.paywall != nil) {
+      [self presentViewController:result.paywall animated:YES completion:nil];
+    } else if (result.skippedReason != SWKPaywallSkippedReasonNone) {
+      switch (result.skippedReason) {
+      // 2
+        case SWKPaywallSkippedReasonHoldout:
+        case SWKPaywallSkippedReasonUserIsSubscribed:
+        case SWKPaywallSkippedReasonEventNotFound:
+        case SWKPaywallSkippedReasonNoRuleMatch:
+        case SWKPaywallSkippedReasonNone:
+          break;
+      };
+    } else if (result.error) {
+      // 3
+      NSLog(@"%@", result.error);
+    }
+  }];
+}
+
+-(void)launchFeature {
+  // Insert code to launch a feature that's behind your paywall.
+}
+
+// 4
+- (void)paywall:(SWKPaywallViewController *)paywall didFinishWithResult:(enum SWKPaywallResult)result shouldDismiss:(BOOL)shouldDismiss {
+  if (shouldDismiss) {
+    [paywall dismissViewControllerAnimated:true completion:nil];
+  }
+
+  SWKPaywallCloseReason closeReason;
+  SWKFeatureGatingBehavior featureGating;
+
+  switch (result) {
+  case SWKPaywallResultPurchased:
+  case SWKPaywallResultRestored:
+    [self launchFeature];
+    break;
+  case SWKPaywallResultDeclined:
+    closeReason = paywall.info.closeReason;
+    featureGating = paywall.info.featureGatingBehavior;
+
+    if (closeReason != SWKPaywallCloseReasonForNextPaywall && featureGating == SWKFeatureGatingBehaviorNonGated) {
+        [self launchFeature];
+    }
+    break;
+  }
+}
+
+@end
+`
+
+This does the following:
+
+1. Gets the paywall view controller.
+2. Handles the cases where the paywall was skipped.
+3. Catches any presentation errors.
+4. Implements the delegate. This is called when the user is finished with the paywall. First, it checks `shouldDismiss`. If this is true then is dismissed the paywall from view before launching any features. This may depend on the `result` depending on how you first presented your view. Then, it switches over the `result`. If the result is `purchased` or `restored` the feature can be launched. However, if the result is `declined`, it checks that the the `featureGating` property of `paywall.info` is `nonGated` and that the `closeReason` isn't `.forNextPaywall`.
+
+### Best practices
+
+1. **Make sure to prevent a paywall from being accessed after a purchase has occurred**.
+
+If a user purchases from a paywall, it is your responsibility to make sure that the user can't access that paywall again. For example, if after successful purchase you decide to push a new view on to the navigation stack, you should make sure that the user can't go back to access the paywall.
+
+1. **Make sure the paywall view controller deallocates before presenting it elsewhere**.
+
+If you have a paywall view controller presented somewhere and you try to present the same view controller elsewhere, you will get a crash. For example, you may have a paywall in a tab bar controller, and then you also try to present it modally. We plan on improving this, but currently it's your responsibility to ensure this doesn't happen.

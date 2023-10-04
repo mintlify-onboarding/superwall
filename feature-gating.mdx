@@ -1,0 +1,273 @@
+---
+title: "Showing Paywalls"
+---
+
+At the heart of Superwall's SDK lies `Superwall.shared.register(event:params:handler:feature:)`. 
+
+This allows you to register an event to access a feature that may or may not be paywalled later in time. It also allows you to choose whether the user can access the feature even if they don't make a purchase.
+
+Here's an example. 
+
+#### ![:white-check-mark:](/images/white-check-mark.png ":white-check-mark:") With Superwall
+
+SwiftObjective-C
+
+`func pressedWorkoutButton() {
+  // remotely decide if a paywall is shown and if 
+  // navigation.startWorkout() is a paid-only feature
+  Superwall.shared.register(event: "StartWorkout") { 
+    navigation.startWorkout()
+  }
+}
+`
+
+`- (void)pressedWorkoutButton {
+  // remotely decide if a paywall is shown and if
+  // navigation.startWorkout() is a paid-only feature
+  [[Superwall sharedInstance] registerWithEvent:@"StartWorkout" params:nil handler:nil feature:^{
+    [navigation startWorkout];
+  }];
+}
+`
+
+#### ![:thumbsdown:](/images/thumbsdown.png ":thumbsdown:") Without Superwall
+
+SwiftObjective-C
+
+`func pressedWorkoutButton() {
+  if (user.hasActiveSubscription) {
+    navigation.startWorkout()
+  } else {
+    navigation.presentPaywall() { result in
+      if (result) {
+        navigation.startWorkout()
+      } else {
+        // user didn't pay, developer decides what to do
+      }
+    }
+  }
+}
+`
+
+`- (void)pressedWorkoutButton {
+  if (user.hasActiveSubscription) {
+    [navigation startWorkout];
+  } else {
+    [navigation presentPaywallWithCompletion:^(BOOL result) {
+      if (result) {
+        [navigation startWorkout];
+      } else {
+        // user didn't pay, developer decides what to do
+      }
+    }];
+  }
+}
+`
+
+### How it works:
+
+You can configure `"StartWorkout"` to present a paywall by [creating a campaign, adding the event, and adding a rule](/docs/campaigns) in the dashboard.
+
+1. The SDK retrieves your campaign settings from the dashboard on app launch.
+2. When an event is called that belongs to a campaign, rules are evaluated _**on device**_ and the user enters an experiment — this means there's no delay between registering an event and presenting a paywall.
+3. If it's the first time a user is entering an experiment, a paywall is decided for the user based on the percentages you set in the dashboard
+4. Once a user is assigned a paywall for a rule, they will continue to see that paywall until you remove the paywall from the rule or reset assignments to the paywall.
+5. After the paywall is closed, the Superwall SDK looks at the _Feature Gating_ value associated with your paywall, configurable from the paywall editor under General > Feature Gating (more on this below)  
+   1. If the paywall is set to **_Non Gated_**, the `feature:` closure on `register(event: ...)` gets called when the paywall is dismissed (whether they paid or not)  
+   2. If the paywall is set to **_Gated_**, the `feature:` closure on `register(event: ...)` gets called only if the user is already paying or if they begin paying.
+6. If no paywall is configured, the feature gets executed immediately without any additional network calls.
+
+Given the low cost nature of how register works, we strongly recommend registering **all core functionality** in order to remotely configure which features you want to gate – **without an app update**.
+
+SwiftObjective-C
+
+`// on the welcome screen
+func pressedSignUp() {
+  Superwall.shared.register(event: "SignUp") {
+    navigation.beginOnboarding()
+  }
+}
+
+// in another view controller
+func pressedWorkoutButton() {
+  Superwall.shared.register(event: "StartWorkout") {
+    navigation.startWorkout()
+  }
+}
+`
+
+`// In the Welcome screen view controller
+- (void)pressedSignUp {
+  [[Superwall sharedInstance] registerWithEvent:@"SignUp" params:nil handler:nil feature:^{
+    [navigation beginOnboarding];
+  }];
+}
+
+// In another view controller
+- (void)pressedWorkoutButton {
+  [[Superwall sharedInstance] registerWithEvent:@"StartWorkout" params:nil handler:nil feature:^{
+    [navigation startWorkout];
+  }];
+}
+`
+
+### Feature Gating from the Paywall Editor
+
+##### Paywall Editor > General > Settings > Feature Gating
+
+Feature gating allows your team to retroactively decide if this paywall is _Gated_ or _Non Gated_
+
+| Type                    | Behavior                                                                 | Example                                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Non Gated** (default) | Show Paywall → Execute Feature                                           | When "Sign Up" button is pressed, show a paywall, then continue onboarding once the paywall is dismissed.                        |
+| **Gated**               | Show Paywall → Is user paying?If Yes → Execute FeatureIf No → Do Nothing | When "Start Workout" button is pressed, show a paywall, then continue once the paywall is dismissed only if the user subscribes. |
+
+![](/images/1845a38-feature-gating.png) 
+
+Remember, the feature is always executed if:
+
+1. No campaign is configured for the event
+2. The user is already paying
+
+### Using the Handler
+
+You can provide a `PaywallPresentationHandler` to `register`, whose functions provide status updates for a paywall:
+
+* `onDismiss`: Called when the paywall is dismissed. Accepts a `PaywallInfo` object containing info about the dismissed paywall.
+* `onPresent`: Called when the paywall did present. Accepts a `PaywallInfo` object containing info about the presented paywall.
+* `onError`: Called when an error occurred when trying to present a paywall. Accepts an `Error` indicating why the paywall could not present.
+* `onSkip`: Called when a paywall is skipped. Accepts a `PaywallSkippedReason` enum indicating why the paywall was skipped.
+
+SwiftObjective-C
+
+`let handler = PaywallPresentationHandler()
+handler.onDismiss { paywallInfo in
+  print("The paywall dismissed. PaywallInfo:", paywallInfo)
+}
+handler.onPresent { paywallInfo in
+  print("The paywall presented. PaywallInfo:", paywallInfo)
+}
+handler.onError { error in
+  print("The paywall presentation failed with error \(error)")
+}
+handler.onSkip { reason in
+  switch reason {
+  case .userIsSubscribed:
+    print("Paywall not shown because user is subscribed.")
+  case .holdout(let experiment):
+    print("Paywall not shown because user is in a holdout group in Experiment: \(experiment.id)")
+  case .noRuleMatch:
+    print("Paywall not shown because user doesn't match any rules.")
+  case .eventNotFound:
+    print("Paywall not shown because this event isn't part of a campaign.")
+  }
+}
+
+Superwall.shared.register(event: "campaign_trigger", handler: handler) {
+  // Feature launched
+}
+`
+
+`SWKPaywallPresentationHandler *handler = [[SWKPaywallPresentationHandler alloc] init];
+
+[handler onDismiss:^(SWKPaywallInfo * _Nonnull paywallInfo) {
+  NSLog(@"The paywall dismissed. PaywallInfo: %@", paywallInfo);
+}];
+
+[handler onPresent:^(SWKPaywallInfo * _Nonnull paywallInfo) {
+  NSLog(@"The paywall presented. PaywallInfo: %@", paywallInfo);
+}];
+
+[handler onError:^(NSError * _Nonnull error) {
+  NSLog(@"The paywall presentation failed with error %@", error);
+}];
+
+[handler onSkip:^(enum SWKPaywallSkippedReason reason) {
+  switch (reason) {
+    case SWKPaywallSkippedReasonUserIsSubscribed:
+      NSLog(@"Paywall not shown because user is subscribed.");
+      break;
+    case SWKPaywallSkippedReasonHoldout:
+      NSLog(@"Paywall not shown because user is in a holdout group.");
+      break;
+    case SWKPaywallSkippedReasonNoRuleMatch:
+      NSLog(@"Paywall not shown because user doesn't match any rules.");
+      break;
+    case SWKPaywallSkippedReasonEventNotFound:
+      NSLog(@"Paywall not shown because this event isn't part of a campaign.");
+      break;
+    case SWKPaywallSkippedReasonNone:
+      // The paywall wasn't skipped.
+      break;
+  }
+}];
+
+[[Superwall sharedInstance] registerWithEvent:@"campaign_trigger" params:nil handler:handler feature:^{
+  // Feature launched.
+}];
+`
+
+### Automatically Registered Events
+
+The SDK [automatically registers](/docs/tracking-analytics) some internal events which can be used to present paywalls:
+
+* `app_install`
+* `app_launch`
+* `deepLink_open`
+* `session_start`
+* `transaction_abandon`
+* `transaction_fail`
+* `paywall_close`
+
+### Register. Everything.
+
+To provide your team with ultimate flexibility, we recommend registering _all_ of your analytics events, even if you don't pass feature blocks through. This way you can retroactively add a paywall almost anywhere – **without an app update**!
+
+If you're already set up with an analytics provider, you'll typically have an `Analytics.swift` singleton (or similar) to disperse all your events from. Here's how that file might look:
+
+Swift
+
+`import SuperwallKit
+import Mixpanel
+import Firebase
+
+final class Analytics {
+  static var shared = Analytics()
+  
+  func track(
+    event: String,
+    properties: [String: Any]
+  ) {
+    // Superwall
+    Superwall.shared.register(event: event, params: properties)
+    
+    // Firebase (just an example)
+    Firebase.Analytics.logEvent(event, parameters: properties)
+    
+    // Mixpanel (just an example)
+    Mixpanel.mainInstance().track(event: eventName, properties: properties)
+  }
+}
+  
+  
+// And thus ...
+  
+Analytics.shared.track(
+  event: "workout_complete",
+  properties: ["total_workouts": 17]
+)
+  
+// ... can now be turned into a paywall moment :)
+`
+
+> 📘
+> 
+> Need to know if a paywall will show beforehand?
+> 
+> In some circumstances, you might like to if a particular event will present a paywall. To do this, you can use `Superwall.shared.getPresentationResult(forEvent:params:)`.
+
+### Handling Network Issues
+
+For subscribed users, we prioritise your app's functionality over waiting for network issues such as loss of internet to resolve. If the paywall is non-gated, we will call the feature block. If the paywall is gated, we will call the `onError` handler. 
+
+For non-subscribed users, we will retry network calls until we have retrieved the necessary data.

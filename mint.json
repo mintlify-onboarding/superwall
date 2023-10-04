@@ -1,0 +1,98 @@
+{
+    "name": "Superwall",
+    "logo": {
+      "light": "/logo/light.png",
+      "dark": "/logo/dark.png"
+    },
+    "favicon": "/favicon.png",
+    "colors": {
+      "primary": "#74FFF1",
+      "light": "#94FFF4",
+      "dark": "#74FFF1"
+    },
+    "modeToggle": {
+        "default": "dark",
+        "isHidden": true
+    },
+    "topbarCtaButton": {
+      "name": "Sign Up",
+      "url": "https://superwall.com/"
+    },
+    "topbarLinks": [
+      {
+        "name": "Status",
+        "url": "https://superwall.statuspage.io/"
+      }
+    ],
+    "anchors": [
+      {
+        "name": "Blog",
+        "icon": "newspaper",
+        "url": "https://superwall.com/blog"
+      },
+      {
+        "name": "GitHub",
+        "icon": "github",
+        "url": "https://github.com/superwall-me"
+      },
+      {
+        "name": "Twitter",
+        "icon": "twitter",
+        "url": "https://twitter.com/superwall"
+      }
+    ],
+    "navigation": [
+        {
+            "group": "Home",
+            "pages": [
+              "home"
+            ]
+          },
+          {
+            "group": "iOS SDK",
+            "pages": [
+              {
+                "group": "Installation",
+                "pages": [
+                  "installation",
+                  "installation-via-spm",
+                  "installation-via-cocoapods"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "SDK Reference",
+            "pages": [
+              "migrating-to-v3"
+            ]
+          },
+          {
+            "group": "Dashboard",
+            "pages": [
+              "using-the-dashboard",
+              {
+                "group": "Creating Paywalls",
+                "pages": [
+                  "configuring-a-paywall",
+                  "paywall-settings-sidebar"
+                ]
+              },
+              {
+                "group": "Campaigns",
+                "pages": [
+                  "campaigns",
+                  "campaign-rules",
+                  "using-implicit-events"
+                ]
+              }
+            ]
+          }
+    ],
+    "footerSocials":
+      {
+          "twitter": "https://twitter.com/superwall",
+          "github": "https://github.com/superwall-me"
+      }
+  }
+  

@@ -1,0 +1,215 @@
+---
+title: "Passing in options"
+---
+
+When configuring the SDK you can pass in options that configure Superwall, the paywall presentation, and its appearance.
+
+### Logging
+
+Logging is enabled by default in the SDK and is controlled by two properties: `level` and `scopes`.
+
+`level` determines the minimum log level to print to the console. There are five types of log level:
+
+1. **debug**: Prints all logs from the SDK to the console. Useful for debugging your app if something isn't working as expected.
+2. **info**: Prints errors, warnings, and useful information from the SDK to the console.
+3. **warn**: Prints errors and warnings from the SDK to the console.
+4. **error**: Only prints errors from the SDK to the console.
+5. **none**: Turns off all logs.
+
+The SDK defaults to `info`.
+
+`scopes` defines the scope of logs to print to the console. For example, you might only care about logs relating to `paywallPresentation` and `paywallTransactions`. This defaults to `.all`. Check out [LogScope](https://sdk.superwall.me/documentation/superwallkit/logscope) for all possible cases.
+
+You set these properties like this:
+
+SwiftObjective-C
+
+`let options = SuperwallOptions()
+options.logging.level = .warn
+options.scopes = [.paywallPresentation, paywallTransactions]
+
+Superwall.configure(apiKey:"MY_API_KEY", options: options);
+
+// Or you can set:
+Superwall.shared.logLevel = .warn
+`
+
+`[[Superwall sharedInstance] setLogLevel:SWKLogLevelWarn];
+`
+
+### Preloading Paywalls
+
+Paywalls are preloaded by default when the app is launched from a cold start. The paywalls that are preloaded are determined by the list of events that result in a paywall for the user when [registered](/docs/feature-gating). Note that this is regardless of whether they match a rule at the point of preloading.
+
+Paywalls are cached by default, which means after they load once, they don't need to be reloaded from the network unless you make a change to them on the dashboard. However, if you have a lot of paywalls, preloading may increase network usage of your app on first load of the paywalls and result in slower loading times overall.
+
+You can turn off preloading by setting `shouldPreload` to `false`:
+
+SwiftObjective-C
+
+`let options = SuperwallOptions()
+options.paywalls.shouldPreload = false
+
+Superwall.configure(apiKey: "MY_API_KEY", options: options)
+`
+
+`SWKSuperwallOptions *options = [[SWKSuperwallOptions alloc] init];
+options.paywalls.shouldPreload = false;
+
+[Superwall configureWithApiKey:@"MY_API_KEY" purchaseController:nil options:options completion:^{}];
+`
+
+Then, if you'd like to preload paywalls for specific event names you can use `preloadPaywalls(forEvents:)`:
+
+SwiftObjective-C
+
+`Superwall.shared.preloadPaywalls(forEvents: ["campaign_trigger"]);
+`
+
+`NSMutableSet<NSString *> *eventNames = [NSMutableSet set];
+[eventNames addObject:@"campaign_trigger"];
+
+[[Superwall sharedInstance] preloadPaywallsForEvents:eventNames];
+`
+
+If you'd like to preload all paywalls you can use `preloadAllPaywalls()`:
+
+SwiftObjective-C
+
+`Superwall.shared.preloadAllPaywalls()
+`
+
+`[[Superwall sharedInstance] preloadAllPaywalls];
+`
+
+Note: These methods will not reload any paywalls that have already been preloaded.
+
+### External Data Collection
+
+By default, Superwall sends all registered events and properties back to the Superwall servers. However, if you have privacy concerns, you can stop this by setting `isExternalDataCollectionEnabled` to `false`:
+
+SwiftObjective-C
+
+`let options = SuperwallOptions()
+options.isExternalDataCollectionEnabled = false
+
+Superwall.configure(apiKey: "MY_API_KEY", options: options)
+`
+
+`SWKSuperwallOptions *options = [[SWKSuperwallOptions alloc] init];
+options.isExternalDataCollectionEnabled = false;
+
+[Superwall configureWithApiKey:@"MY_API_KEY" purchaseController:nil options:options completion:^{}];
+`
+
+Disabling this will not affect your ability to create triggers based on properties.
+
+### Automatically Dismissing the Paywall
+
+By default, Superwall automatically dismisses the paywall when a product is purchased or restored. You can disable this by setting `automaticallyDismiss` to `false`:
+
+SwiftObjective-C
+
+`let options = SuperwallOptions()
+options.paywalls.automaticallyDismiss = false
+
+Superwall.configure(apiKey: "MY_API_KEY", options: options)
+`
+
+`SWKSuperwallOptions *options = [[SWKSuperwallOptions alloc] init];
+options.automaticallyDismiss = false;
+
+[Superwall configureWithApiKey:@"MY_API_KEY" purchaseController:nil options:options completion:^{}];
+`
+
+To manually dismiss the paywall , call `Superwall.shared.dismiss()`.
+
+### Custom Restore Failure Message
+
+You can set the title, message and close button title for the alert that appears after a restoration failure:
+
+SwiftObjective-C
+
+`let options = SuperwallOptions()
+options.paywalls.restoreFailed.title = "My Title"
+options.paywalls.restoreFailed.message = "My message"
+options.paywalls.restoreFailed.closeButtonTitle = "Close"
+
+Superwall.configure(apiKey: "MY_API_KEY", options: options)
+`
+
+`SWKSuperwallOptions *options = [[SWKSuperwallOptions alloc] init];
+options.paywalls.restoreFailed.title = @"My Title";
+options.paywalls.restoreFailed.message = @"My message";
+options.paywalls.restoreFailed.closeButtonTitle = @"Close";
+
+[Superwall configureWithApiKey:@"MY_API_KEY" purchaseController:nil options:options completion:^{}];
+`
+
+### Haptic Feedback
+
+By default, the paywall uses haptic feedback after a user purchases or restores a product, opens a URL from the paywall, or closes the paywall. To disable this, set the `isHapticFeedbackEnabled` `PaywallOption` to false:
+
+SwiftObjective-C
+
+`let options = SuperwallOptions()
+options.paywalls.isHapticFeedbackEnabled = false
+
+Superwall.configure(apiKey: "MY_API_KEY", options: options)
+`
+
+`SWKSuperwallOptions *options = [[SWKSuperwallOptions alloc] init];
+options.isHapticFeedbackEnabled = false;
+
+[Superwall configureWithApiKey:@"MY_API_KEY" purchaseController:nil options:options completion:^{}];
+`
+
+### Transaction Background View
+
+During a transaction, we add a `UIActivityIndicator` behind the view to indicate a loading status. However, you can remove this by setting the `transactionBackgroundView` to `nil`:
+
+Swift
+
+`let options = SuperwallOptions()
+options.paywalls.transactionBackgroundView = nil
+
+Superwall.configure(apiKey: "MY_API_KEY", options: options)
+`
+
+### Purchase Failure Alert
+
+When a purchase fails, we automatically present an alert with the error message. If you'd like to show your own alert after failure, set the `shouldShowPurchaseFailureAlert` `PaywallOption` to `false`:
+
+Swift
+
+`let options = SuperwallOptions()
+options.paywalls.shouldShowPurchaseFailureAlert = false
+
+Superwall.configure(apiKey: "MY_API_KEY", options: options)
+`
+
+### Locale Identifier
+
+When evaluating rules, the device locale identifier is set to `autoupdatingCurrent`. However, you can override this if you want to test a specific locale:
+
+SwiftObjective-C
+
+`let options = SuperwallOptions()
+options.localeIdentifier = "en_GB"
+
+Superwall.configure(apiKey: "MY_API_KEY", options: options)
+`
+
+`SWKSuperwallOptions *options = [[SWKSuperwallOptions alloc] init];
+options.localeIdentifier = @"en_GB";
+
+[Superwall configureWithApiKey:@"MY_API_KEY" purchaseController:nil options:options completion:^{}];
+`
+
+For a list of locales that are available on iOS, take a look at [this list](https://gist.github.com/jacobbubu/1836273). You can also preview your paywall in different locales using [In-App Previews](/docs/in-app-paywall-previews).
+
+### Game Controller
+
+If you're using a game controller, you can enable this in `SuperwallOptions` too. Check out our [Game Controller Support](/docs/game-controller-support) article.
+
+Take a look at [SuperwallOptions](https://sdk.superwall.me/documentation/superwallkit/superwalloptions) in our SDK reference for more info.

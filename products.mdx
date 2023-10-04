@@ -1,0 +1,69 @@
+---
+title: "Products"
+---
+
+The products section of the Paywall Editor allows you to change what products are displayed in your paywall. As we'll discuss soon, your paywall's text is dynamic and changes automatically to reflect pricing, trial and subscription periods depending on what products are selected.
+
+![](/images/98fcc36-Screenshot_2023-06-14_at_17.23.49.png) 
+
+| Field     | Name                                                      | Required     |
+| --------- | --------------------------------------------------------- | ------------ |
+| Primary   | The StoreKit product identifier for your primary product. | **Required** |
+| Secondary | The StoreKit product identifier for your second product.  | _Optional_   |
+| Tertiary  | The StoreKit product identifier for your third product.   | _Optional_   |
+
+Products are managed on the Settings page.
+
+### Getting Product Identifiers
+
+_If you use RevenueCat to handle in-app subscriptions, skip to [Using Revenuecat](/docs/products#using-revenuecat)_
+
+#### Using App Store Connect
+
+On **App Store Connect**, head over to **Your App ▸ App Store ▸ Subscriptions ▸ _Your Subscription Group_**:
+
+![](/images/0b4f712-Screen_Shot_2022-05-17_at_3.29.45_PM.png "Screen Shot 2022-05-17 at 3.29.45 PM.png")
+
+Then, copy your **Product ID**:
+
+![3372](/images/f0c2605-Screen_Shot_2022-05-17_at_3.28.41_PM.png "Screen Shot 2022-05-17 at 3.28.41 PM.png")
+
+Copy your product id
+
+#### Using RevenueCat
+
+For those who use RevenueCat, Superwall automatically pulls in your product identifiers from **any product attached to an offering**.
+
+On RevenueCat make sure your products are associated with an offering (it doesn't need to be the current offering):
+
+![](/images/9426b54-Screen_Shot_2022-05-17_at_3.34.57_PM.png "Screen Shot 2022-05-17 at 3.34.57 PM.png")
+
+Then, add your [RevenueCat Public API Key](https://docs.revenuecat.com/docs/authentication) inside of settings by clicking the **cog wheel icon** in the navigation bar from any page and selecting **Settings**. Paste your API key then click **Update Application**:
+
+![](/images/a4ef0c4-Screenshot_2022-11-25_at_17.13.57.png "Screen Shot 2022-05-17 at 2.58.21 PM.png")
+
+### Adding Products
+
+Head to the **Products** tab from the Settings and click **\+ Add Product**:
+
+![](/images/234b7b0-Screenshot_2022-11-25_at_17.20.24.png) 
+
+For each of your products, fill out your product information here and hit **Save**. If you used RevenueCat in the previous step, your product identifiers are automatically pulled from RevenueCat for you to select. Otherwise you'll need to paste them in here:
+
+![](/images/5d3fa67-Screenshot_2022-11-25_at_17.22.52.png) 
+
+Note that the pricing information you enter here is **only** used in the Paywall Editor. On device, that information is pulled directly from the App Store and localized.
+
+> 📘
+> 
+> StoreKit Configuration File Testing
+> 
+> If you're using a StoreKit Configuration file, pricing information will come from there during local testing. Therefore, it's important to keep your StoreKit Configuration file, Superwall, and the App Store products all in sync. Follow our [Setting up StoreKit testing](/docs/testing-purchases) guide for more information.
+
+These products are now ready to be used within paywalls.
+
+Back in the Paywall Editor, you can select these products:
+
+![770](/images/348952e-Screenshot_2022-06-29_at_11.58.31.png "Screenshot 2022-06-29 at 11.58.31.png") 
+
+Having an issue on device with products not appearing? Run through [this checklist](/docs/troubleshooting#my-products-arent-loading) to make sure everything is configured correctly.

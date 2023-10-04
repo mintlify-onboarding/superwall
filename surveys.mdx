@@ -1,0 +1,45 @@
+---
+title: "Surveys"
+---
+
+Adding a paywall exit survey is a great way to boost conversion and get feedback on why users declined your paywall. Once you've configured a survey, it can be attached to multiple paywalls. A user will only ever see a specific survey once unless you reset its responses.
+
+> 🚧
+> 
+> Only available for users on v3.3.0+ of the SDK
+
+### Configuring a Survey
+
+To configure a survey click **Surveys** in the dashboard, then click **\+ New Survey**:
+
+![](/images/67b15e0-Screenshot_2023-08-07_at_12.02.04.png) 
+
+A survey displays as a `UIAlertController` on device, whose title, message, and options you can specify remotely:
+
+![](/images/c35c74c-Screenshot_2023-08-16_at_12.03.01.png) 
+
+You can add an unlimited number of options. You can also provide an "Other" response, which allows users to type in their own response.
+
+The survey is shown to the percentage of paywalled users that you specify.
+
+### Attaching a Survey to a Paywall
+
+Once you've created the survey, open the paywall that you want to add it to and scroll down to **After Paywall Survey**, select your survey and click **Save**:
+
+![](/images/1d9157e-Screenshot_2023-08-04_at_17.09.39.png) 
+
+The survey will show to users either when they tap the close button of the paywall or when they swipe to dismiss a modally presented paywall.
+
+### Viewing Survey Stats
+
+Click **Stats** in the top right corner to view the survey responses:
+
+![](/images/11eb159-Screenshot_2023-08-07_at_11.40.11.png) 
+
+This gives a live view of the responses from the survey. Clicking on **View "Other" Responses** shows you the custom responses written by users who selected the **Other** option.
+
+To reset the responses to the survey, click **Reset Responses**. This will reset percentages to zero and allow users who've already seen the survey to respond again.
+
+### Using a survey response as a trigger
+
+You can use the event `survey_response` as a paywall trigger, accessing `survey_selected_option_title` and `survey_custom_response` in rules. For example, if you show a survey and users select "Too Expensive" as an option, you might want to show them another paywall with cheaper pricing. In a campaign, you would add the trigger `survey_response` and a rule `if params.survey_selected_option_title == "Too Expensive" { show paywall }`.

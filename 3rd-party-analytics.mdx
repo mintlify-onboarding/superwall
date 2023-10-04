@@ -1,0 +1,106 @@
+---
+title: "3rd Party Analytics"
+---
+
+SuperwallKit automatically tracks some internal events. You can [view the list of events here](/docs/tracking-analytics). We encourage you to also track them in your own analytics by implementing `didTrackSuperwallEventInfo(_:)` in your `SuperwallDelegate`:
+
+SwiftObjective-C
+
+`Superwall.shared.delegate = self
+
+...
+
+extension SuperwallService: SuperwallDelegate {
+  func handleSuperwallEvent(withInfo eventInfo: SuperwallEventInfo) {
+    print("analytics event called", eventInfo.event.description)
+    MyAnalyticsService.shared.track(
+      event: eventInfo.event.description,
+      params: eventInfo.params
+    )
+  }
+}
+`
+
+`[[Superwall sharedInstance] setDelegate:self];
+
+...
+
+- (void)didTrackSuperwallEventInfo:(SWKSuperwallEventInfo *)info {
+  NSLog(@"Analytics event called %@", info.event.description));
+  [[MyAnalyticsService shared] trackEvent:info.event.description params:info.params];
+}
+`
+
+**Note**: You might also want to set user attribute to allow for [Cohorting in 3rd Party Tools](/docs/cohorting-in-3rd-party-tools)
+
+Alternatively, if you want typed versions of all these events with associated values, you can access them via `eventInfo.event`:
+
+Swift
+
+`func handleSuperwallEvent(withInfo eventInfo: SuperwallEventInfo)  {
+  switch eventInfo.event {
+    case .firstSeen:
+      break
+    case .appOpen:
+      break
+    case .appLaunch:
+      break
+    case .appInstall:
+      break
+    case .sessionStart:
+      break
+    case .appClose:
+      break
+    case .deepLink(let url):
+      break
+    case .triggerFire(let eventName, let result):
+      break
+    case .paywallOpen(let paywallInfo):
+      break
+    case .paywallClose(let paywallInfo):
+      break
+    case .transactionStart(let product, let paywallInfo):
+      break
+    case .transactionFail(let error, let paywallInfo):
+      break
+    case .transactionAbandon(let product, let paywallInfo):
+      break
+    case .transactionComplete(let transaction, let product, let paywallInfo):
+      break
+    case .subscriptionStart(let product, let paywallInfo):
+      break
+    case .freeTrialStart(let product, let paywallInfo):
+      break
+    case .transactionRestore(let paywallInfo):
+      break
+    case .userAttributes(let attributes):
+      break
+    case .nonRecurringProductPurchase(let product, let paywallInfo):
+      break
+    case .paywallResponseLoadStart(let triggeredEventName):
+      break
+    case .paywallResponseLoadNotFound(let triggeredEventName):
+      break
+    case .paywallResponseLoadFail(let triggeredEventName):
+      break
+    case .paywallResponseLoadComplete(let triggeredEventName, let paywallInfo):
+      break
+    case .paywallWebviewLoadStart(let paywallInfo):
+      break
+    case .paywallWebviewLoadFail(let paywallInfo):
+      break
+    case .paywallWebviewLoadComplete(let paywallInfo):
+      break
+    case .paywallWebviewLoadTimeout(let paywallInfo):
+      break
+    case .paywallProductsLoadStart(let triggeredEventName, let paywallInfo):
+      break
+    case .paywallProductsLoadFail(let triggeredEventName, let paywallInfo):
+      break
+    case .paywallProductsLoadComplete(let triggeredEventName):
+      break
+    case .subscriptionStatusDidChange:
+      break
+    }
+}
+`

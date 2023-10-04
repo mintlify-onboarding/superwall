@@ -1,0 +1,52 @@
+---
+title: "Campaigns"
+description: "Campaigns are logical groupings of paywalls to show when certain _events_ are registered and _conditions_ are met. They are an incredibly powerful tool for creating experiments and managing best-in-class monetization flows."
+sidebarTitle: "Overview"
+---
+
+Campaigns consist of three main concepts:
+
+1. [Registered Events](/docs/feature-gating)
+2. [Rules](/docs/campaign-rules)
+3. [Paywalls](/docs/configuring-a-paywall)
+
+When certain **events** are registered, evaluate these **rules** and show these **paywalls**. 
+
+You can set the percentage of new users that see each paywall, and can configure no paywall (a.k.a. a holdout) to be shown for certain rules.
+
+### Example 1
+
+![](/images/a0d2354-Screenshot_2022-11-30_at_12.45.16.png "Screen Shot 2022-05-17 at 4.15.16 PM.png") 
+
+In this scenario, every time the `viewed_welcome_screen` event is [tracked](/docs/tracking-events), 50% of users will see the paywall, and the other 50% of users won't see any paywall at all. Since the rule is `true`, all users will match.
+
+Setting a holdout is useful when you want to test the effectiveness of showing a paywall. In the above scenario, the developer uses the holdout to see whether adding a paywall on `viewed_welcome_screen` increases or decreases transactions. The holdout group acts as a control which they can compare against.
+
+> 📘
+> 
+> Assignments Are "Sticky"
+> 
+> Once a user is assigned a paywall or a holdout within a rule, they will continue to see that assignment unless you reset assignments (by clicking the reset icon next to Assigned) or remove the paywall from the rule via the X button.
+> 
+> Remember: Changing a paywall's percentage only affects **new users**. It doesn't affect assignments for users who already saw that paywall.
+
+You can also assign multiple events to the same campaign — assignments will be sticky regardless of which event was tracked.
+
+### Example 2
+
+Here's an example with two events and two paywalls, where everyone sees a paywall:
+
+![](/images/06eec28-Screenshot_2022-11-30_at_12.55.15.png "Screen Shot 2022-05-17 at 4.29.29 PM.png") 
+
+In this scenario, both `pressed_continue_welcome_screen` and `load_feed` events will trigger the campaign. 50% of users will see the first paywall, and 50% of users will see the second.
+
+### Example 3
+
+Here's a more complicated example:
+
+![](/images/abd77cf-Screenshot_2022-11-30_at_13.05.09.png "Screen Shot 2022-05-17 at 4.35.10 PM.png")
+
+When `tapped_start_workout` is registered:
+
+1. If the user has completed greater than or equal to 3 workouts, always shows a paywall.
+2. In all other scenarios, show a paywall 50% of the time.

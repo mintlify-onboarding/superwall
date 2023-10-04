@@ -1,0 +1,21 @@
+---
+title: "Cohorting in 3rd Party Tools"
+---
+
+To easily view Superwall cohorts in 3rd party tools, we recommend you set user attributes based on the experiments that users are included in.
+
+Swift
+
+`extension SuperwallService: SuperwallDelegate {
+  func handleSuperwallEvent(withInfo eventInfo: SuperwallEventInfo) {
+    if eventInfo.event.description == "trigger_fire" { 
+      MyAnalyticsService.shared.setUserAttributes([
+        "sw_experiment_\(eventInfo.event.params["experiment_id"])": true,
+        "sw_variant_\(eventInfo.event.params["variant_id"])": true
+      ])
+    }
+  }
+}
+`
+
+Once you've set this up, you can easily ask for all users who have an attribute `sw_experiment_1234` and breakdown by both variants to see how users in a Superwall experiment behave in other areas of your app.

@@ -1,0 +1,30 @@
+---
+title: "CocoaPods"
+---
+
+## Install via CocoaPods
+
+First, add the following to your Podfile:
+
+`pod 'SuperwallKit', '< 4.0.0'
+`
+
+Next, run `pod repo update` to update your local spec repo. [Why?](https://stackoverflow.com/questions/43701352/what-exactly-does-pod-repo-update-do)
+
+Finally, run `pod install` from your terminal.
+
+### Updating to a New Release
+
+To update to a new beta release, you'll need to update the version specified in the Podfile and then run `pod install` again.
+
+### Import SuperwallKit
+
+You should now be able to `import SuperwallKit`:
+
+SwiftObjective-C
+
+`import SuperwallKit
+`
+
+`@import SuperwallKit;
+`
