@@ -1,16 +1,14 @@
 ---
 title: "Using RevenueCat"
+description: "If you want to use RevenueCat to handle your subscription-related logic with Superwall, follow this guide."
 ---
-
-If you want to use RevenueCat to handle your subscription-related logic with Superwall, follow this guide.
 
 #### 1\. Create a PurchaseController
 
 Create a new file called `RCPurchaseController.swift`, then copy and paste the following:
 
-Swift
-
-`` import SuperwallKit
+```swift Swift
+ import SuperwallKit
 import RevenueCat
 
 final class RCPurchaseController: PurchaseController {
@@ -67,24 +65,22 @@ final class RCPurchaseController: PurchaseController {
     }
   }
 }
-
- ``
+```
 
 As discussed in [Purchases and Subscription Status](/docs/advanced-configuration), this `PurchaseController` is responsible for handling the subscription-related logic. Take a few moments to look through the code to understand how it does this.
 
 #### 2\. Configure Superwall
 
+
 Initialize an instance of `RCPurchaseController` and pass it in to `Superwall.configure(apiKey:purchaseController)`:
-
-Swift
-
-`let purchaseController = RCPurchaseController()
+```swift Swift
+let purchaseController = RCPurchaseController()
 
 Superwall.configure(
   apiKey: "superwall_api_key", 
   purchaseController: purchaseController
 )
-`
+```
 
 #### 3\. Sync the subscription status
 

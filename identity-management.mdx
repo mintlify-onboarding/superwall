@@ -1,8 +1,8 @@
 ---
 title: "User Management"
+sidebarTitle: "Overview"
+description: "It is necessary to uniquely identify users to track their journey within Superwall."
 ---
-
-It is necessary to uniquely identify users to track their journey within Superwall.
 
 ### Anonymous Users
 
@@ -16,27 +16,29 @@ If you use your own user management system, call `identify(userId:options:)` whe
 
 Calling `Superwall.shared.reset()` will reset the on-device userId to a random ID and clear the paywall assignments.
 
-SwiftObjective-C
-
-`// After retrieving a user's ID, e.g. from logging in or creating an account
+<CodeGroup>
+```swift Swift
+// After retrieving a user's ID, e.g. from logging in or creating an account
 Superwall.shared.identify(userId: user.id)
 
 // When the user signs out
 Superwall.shared.reset()
-`
+```
 
-`// After retrieving a user's ID, e.g. from logging in or creating an account
+```swift Objective-C
+// After retrieving a user's ID, e.g. from logging in or creating an account
 [[Superwall sharedInstance] identifyWithUserId:user.id];
 
 // When the user signs out
 [[Superwall sharedInstance] resetWithCompletionHandler:completion];
-`
+```
+</CodeGroup>
+<br/>
+<Note>
+    **Advanced Use Case**
 
-> 📘
-> 
-> Advanced Use Case
-> 
-> You can supply an `IdentityOptions` object, whose property `restorePaywallAssignments` you can set to `true`. This tells the SDK to wait to restore paywall assignments from the server before presenting any paywalls. This should only be used in advanced use cases. If you expect users of your app to switch accounts or delete/reinstall a lot, you'd set this when users log in to an existing account.
+    You can supply an `IdentityOptions` object, whose property `restorePaywallAssignments` you can set to `true`. This tells the SDK to wait to restore paywall assignments from the server before presenting any paywalls. This should only be used in advanced use cases. If you expect users of your app to switch accounts or delete/reinstall a lot, you'd set this when users log in to an existing account.
+</Note>
 
 ### Best Practices for a Unique User ID
 

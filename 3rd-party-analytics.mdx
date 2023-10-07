@@ -1,12 +1,13 @@
 ---
 title: "3rd Party Analytics"
+sidebarTitle: "Overview"
+description: "SuperwallKit automatically tracks some internal events. You can [view the list of events here](/docs/tracking-analytics). We encourage you to also track them in your own analytics by implementing `didTrackSuperwallEventInfo(_:)` in your `SuperwallDelegate`:"
 ---
 
-SuperwallKit automatically tracks some internal events. You can [view the list of events here](/docs/tracking-analytics). We encourage you to also track them in your own analytics by implementing `didTrackSuperwallEventInfo(_:)` in your `SuperwallDelegate`:
+<CodeGroup>
 
-SwiftObjective-C
-
-`Superwall.shared.delegate = self
+```Swift Swift
+Superwall.shared.delegate = self
 
 ...
 
@@ -19,9 +20,10 @@ extension SuperwallService: SuperwallDelegate {
     )
   }
 }
-`
+```
 
-`[[Superwall sharedInstance] setDelegate:self];
+```Swift Objective-C
+[[Superwall sharedInstance] setDelegate:self];
 
 ...
 
@@ -29,15 +31,16 @@ extension SuperwallService: SuperwallDelegate {
   NSLog(@"Analytics event called %@", info.event.description));
   [[MyAnalyticsService shared] trackEvent:info.event.description params:info.params];
 }
-`
+```
+</CodeGroup>
 
-**Note**: You might also want to set user attribute to allow for [Cohorting in 3rd Party Tools](/docs/cohorting-in-3rd-party-tools)
+<Note>You might also want to set user attribute to allow for [Cohorting in 3rd Party Tools](/cohorting-in-3rd-party-tools)</Note>
 
 Alternatively, if you want typed versions of all these events with associated values, you can access them via `eventInfo.event`:
 
-Swift
 
-`func handleSuperwallEvent(withInfo eventInfo: SuperwallEventInfo)  {
+```Swift Swift
+func handleSuperwallEvent(withInfo eventInfo: SuperwallEventInfo)  {
   switch eventInfo.event {
     case .firstSeen:
       break
@@ -103,4 +106,4 @@ Swift
       break
     }
 }
-`
+```

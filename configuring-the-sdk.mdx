@@ -1,8 +1,8 @@
 ---
 title: "Configuring the SDK"
+sidebarTitle: "Overview"
+description: "As soon as your app launches, you need to configure the SDK with your **Public API Key**. You'll retrieve this from the Superwall settings page."
 ---
-
-As soon as your app launches, you need to configure the SDK with your **Public API Key**. You'll retrieve this from the Superwall settings page.
 
 If you haven't already, [sign up for a free account](https://superwall.com/sign-up) on Superwall. Then, when you're through to the Dashboard, click **Settings** from the panel on the left, click **Keys** and copy your **Public API Key**:
 
@@ -10,9 +10,11 @@ If you haven't already, [sign up for a free account](https://superwall.com/sign-
 
 Then, open **AppDelegate.swift** and call `Superwall.configure(apiKey:)` inside `application(_:didFinishLaunchingWithOptions)` with your API key. If you're using SwiftUI, you can call this on the `init` of your main `App` file:
 
-Swift-UIKitSwiftUIObjective-C
 
-`import UIKit
+<CodeGroup>
+
+```swift Swift-UIKit
+import UIKit
 import SuperwallKit
 
 @main
@@ -25,9 +27,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 }
-`
+```
 
-`import SwiftUI
+```swift SwiftUI
+import SwiftUI
 import SuperwallKit
 
 @main
@@ -39,22 +42,25 @@ struct MyApp: App {
   
   // etc...
 }
-`
+```
 
-`@import SuperwallKit;
+```swift Objective-C
+@import SuperwallKit;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Initialize the Superwall service.
     [Superwall configureWithApiKey:@"MY_API_KEY"];
     return YES;
 }
-`
+```
+
+</CodeGroup>
 
 This configures a shared instance of `Superwall`, the primary class for interacting with the SDK's API. Make sure to replace `MYAPIKEY` with your public API key that you just retrieved.
 
-> 📘
-> 
-> By default, Superwall handles basic subscription-related logic for you. However, if you’d like greater control over this process (e.g. if you’re using RevenueCat), you’ll want to pass in a `PurchaseController` to your configuration call and manually set the `subscriptionStatus`. You can also pass in `SuperwallOptions` to customize the appearance and behavior of the SDK. See [Purchases and Subscription Status](/docs/advanced-configuration) for more.
+<Note>
+  By default, Superwall handles basic subscription-related logic for you. However, if you’d like greater control over this process (e.g. if you’re using RevenueCat), you’ll want to pass in a `PurchaseController` to your configuration call and manually set the `subscriptionStatus`. You can also pass in `SuperwallOptions` to customize the appearance and behavior of the SDK. See [Purchases and Subscription Status](/docs/advanced-configuration) for more.
+</Note>
 
 You've now configured Superwall!
 

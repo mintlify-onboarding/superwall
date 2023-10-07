@@ -1,28 +1,32 @@
 ---
 title: "Custom Paywall Actions"
+description: "You can set the click behavior of any element on a paywall to be a custom paywall action. This allows you to tie any tap in your paywall to hard-coded application logic."
 ---
 
-You can set the click behavior of any element on a paywall to be a custom paywall action. This allows you to tie any tap in your paywall to hard-coded application logic.
 
 For example, adding a custom action called `help_center` to a button in your paywall gives you the opportunity to present a help center whenever that button is pressed. To set this up, implement `handleCustomPaywallAction(withName:)` in your `SuperwallDelegate`:
 
-SwiftObjective-C
-
-`extension SuperwallService: SuperwallDelegate {
+<CodeGroup>
+```Swift Swift
+extension SuperwallService: SuperwallDelegate {
   func handleCustomPaywallAction(withName name: String) {
     if name == "help_center" {
       HelpCenterManager.present()
     }
   }
 }
-`
+```
 
-`// Inside PaywallService.m
+```Swift Objective-C
+// Inside PaywallService.m
 
 - (void)handleCustomPaywallActionWithName:(NSString *)name
 {
     NSLog(@"Custom button: %@", name);
 }
-`
-
-Note: remember to set `Superwall.shared.delegate`!
+```
+</CodeGroup>
+<br/>
+<Note>
+  remember to set `Superwall.shared.delegate`!
+</Note>

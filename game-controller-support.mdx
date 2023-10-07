@@ -1,24 +1,23 @@
 ---
 title: "Game Controller Support"
+description: "SuperwallKit supports Game Controller input."
 ---
-
-SuperwallKit supports Game Controller input.
 
 First, set the `SuperwallOption` `isGameControllerEnabled` to `true`:
 
-`let options = SuperwallOptions()
+```Swift Swift
+let options = SuperwallOptions()
 options.isGameControllerEnabled = true
 Superwall.configure(apiKey: "MY_API_KEY", options: options);
-`
+```
 
 Then forward events to your paywall by calling `gamepadValueChanged(gamepad:element:)` from your own gamepad's `valueChanged` handler:
 
-Swift
-
-`controller.extendedGamepad?.valueChangedHandler = { gamepad, element in
+```Swift Swift
+controller.extendedGamepad?.valueChangedHandler = { gamepad, element in
   // send values to Superwall
   Superwall.shared.gamepadValueChanged(gamepad: gamepad, element: element)
                                                    
   // ... rest of your code
 }
-`
+```

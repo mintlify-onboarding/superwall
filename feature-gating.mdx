@@ -1,40 +1,39 @@
 ---
 title: "Showing Paywalls"
+description: "At the heart of Superwall's SDK lies `Superwall.shared.register(event:params:handler:feature:)`. "
+sidebarTitle: "Overview"
 ---
-
-At the heart of Superwall's SDK lies `Superwall.shared.register(event:params:handler:feature:)`. 
 
 This allows you to register an event to access a feature that may or may not be paywalled later in time. It also allows you to choose whether the user can access the feature even if they don't make a purchase.
 
 Here's an example. 
 
-#### ![:white-check-mark:](/images/white-check-mark.png ":white-check-mark:") With Superwall
+#### With Superwall
 
-SwiftObjective-C
-
-`func pressedWorkoutButton() {
+```Swift Swift
+func pressedWorkoutButton() {
   // remotely decide if a paywall is shown and if 
   // navigation.startWorkout() is a paid-only feature
   Superwall.shared.register(event: "StartWorkout") { 
     navigation.startWorkout()
   }
-}
+}``
 `
 
-`- (void)pressedWorkoutButton {
+```Swift Objective-C
+- (void)pressedWorkoutButton {
   // remotely decide if a paywall is shown and if
   // navigation.startWorkout() is a paid-only feature
   [[Superwall sharedInstance] registerWithEvent:@"StartWorkout" params:nil handler:nil feature:^{
     [navigation startWorkout];
   }];
 }
-`
+```
 
-#### ![:thumbsdown:](/images/thumbsdown.png ":thumbsdown:") Without Superwall
+#### Without Superwall
 
-SwiftObjective-C
-
-`func pressedWorkoutButton() {
+```Swift Swift
+func pressedWorkoutButton() {
   if (user.hasActiveSubscription) {
     navigation.startWorkout()
   } else {
@@ -47,9 +46,10 @@ SwiftObjective-C
     }
   }
 }
-`
+```
 
-`- (void)pressedWorkoutButton {
+```Swift Objective-C
+- (void)pressedWorkoutButton {
   if (user.hasActiveSubscription) {
     [navigation startWorkout];
   } else {
@@ -62,7 +62,7 @@ SwiftObjective-C
     }];
   }
 }
-`
+```
 
 ### How it works:
 
@@ -79,9 +79,9 @@ You can configure `"StartWorkout"` to present a paywall by [creating a campaign,
 
 Given the low cost nature of how register works, we strongly recommend registering **all core functionality** in order to remotely configure which features you want to gate – **without an app update**.
 
-SwiftObjective-C
-
-`// on the welcome screen
+<CodeGroup>
+```Swift Swift
+// on the welcome screen
 func pressedSignUp() {
   Superwall.shared.register(event: "SignUp") {
     navigation.beginOnboarding()
@@ -94,9 +94,10 @@ func pressedWorkoutButton() {
     navigation.startWorkout()
   }
 }
-`
+```
 
-`// In the Welcome screen view controller
+```swift Objective-C
+// In the Welcome screen view controller
 - (void)pressedSignUp {
   [[Superwall sharedInstance] registerWithEvent:@"SignUp" params:nil handler:nil feature:^{
     [navigation beginOnboarding];
@@ -109,7 +110,8 @@ func pressedWorkoutButton() {
     [navigation startWorkout];
   }];
 }
-`
+```
+</CodeGroup>
 
 ### Feature Gating from the Paywall Editor
 
@@ -138,9 +140,8 @@ You can provide a `PaywallPresentationHandler` to `register`, whose functions pr
 * `onError`: Called when an error occurred when trying to present a paywall. Accepts an `Error` indicating why the paywall could not present.
 * `onSkip`: Called when a paywall is skipped. Accepts a `PaywallSkippedReason` enum indicating why the paywall was skipped.
 
-SwiftObjective-C
-
-`let handler = PaywallPresentationHandler()
+```Swift Swift
+let handler = PaywallPresentationHandler()
 handler.onDismiss { paywallInfo in
   print("The paywall dismissed. PaywallInfo:", paywallInfo)
 }
@@ -166,9 +167,10 @@ handler.onSkip { reason in
 Superwall.shared.register(event: "campaign_trigger", handler: handler) {
   // Feature launched
 }
-`
+```
 
-`SWKPaywallPresentationHandler *handler = [[SWKPaywallPresentationHandler alloc] init];
+```Swift Objective-C
+SWKPaywallPresentationHandler *handler = [[SWKPaywallPresentationHandler alloc] init];
 
 [handler onDismiss:^(SWKPaywallInfo * _Nonnull paywallInfo) {
   NSLog(@"The paywall dismissed. PaywallInfo: %@", paywallInfo);
@@ -205,7 +207,7 @@ Superwall.shared.register(event: "campaign_trigger", handler: handler) {
 [[Superwall sharedInstance] registerWithEvent:@"campaign_trigger" params:nil handler:handler feature:^{
   // Feature launched.
 }];
-`
+```
 
 ### Automatically Registered Events
 
@@ -225,9 +227,9 @@ To provide your team with ultimate flexibility, we recommend registering _all_ o
 
 If you're already set up with an analytics provider, you'll typically have an `Analytics.swift` singleton (or similar) to disperse all your events from. Here's how that file might look:
 
-Swift
 
-`import SuperwallKit
+```Swift Swift
+import SuperwallKit
 import Mixpanel
 import Firebase
 
@@ -258,14 +260,13 @@ Analytics.shared.track(
 )
   
 // ... can now be turned into a paywall moment :)
-`
+```
 
-> 📘
-> 
-> Need to know if a paywall will show beforehand?
-> 
-> In some circumstances, you might like to if a particular event will present a paywall. To do this, you can use `Superwall.shared.getPresentationResult(forEvent:params:)`.
+<Note>
+  **Need to know if a paywall will show beforehand?**
 
+  In some circumstances, you might like to if a particular event will present a paywall. To do this, you can use `Superwall.shared.getPresentationResult(forEvent:params:)`.
+</Note>
 ### Handling Network Issues
 
 For subscribed users, we prioritise your app's functionality over waiting for network issues such as loss of internet to resolve. If the paywall is non-gated, we will call the feature block. If the paywall is gated, we will call the `onError` handler. 

@@ -1,12 +1,10 @@
 ---
 title: "Retrieving and Presenting a Paywall Yourself"
+description: "If you want complete control over the paywall presentation process, you can use `getPaywall(forEvent:params:paywallOverrides:delegate:)`. This returns the `UIViewController` subclass `PaywallViewController`, which you can then present however you like. The following is code is how you'd mimic [register](/docs/feature-gating):"
 ---
 
-If you want complete control over the paywall presentation process, you can use `getPaywall(forEvent:params:paywallOverrides:delegate:)`. This returns the `UIViewController` subclass `PaywallViewController`, which you can then present however you like. The following is code is how you'd mimic [register](/docs/feature-gating):
-
-SwiftObjective-C
-
-`final class MyViewController: UIViewController {
+```Swift Swift
+final class MyViewController: UIViewController {
   private func presentPaywall() async {
     do {
       // 1
@@ -59,9 +57,10 @@ extension MyViewController: PaywallViewControllerDelegate {
     }
   }
 }
-`
+```
 
-`@interface MyViewController : UIViewController
+```Swift Objective-C
+@interface MyViewController : UIViewController
 
 - (void)presentPaywall;
 
@@ -125,7 +124,7 @@ extension MyViewController: PaywallViewControllerDelegate {
 }
 
 @end
-`
+```
 
 This does the following:
 
@@ -140,6 +139,6 @@ This does the following:
 
 If a user purchases from a paywall, it is your responsibility to make sure that the user can't access that paywall again. For example, if after successful purchase you decide to push a new view on to the navigation stack, you should make sure that the user can't go back to access the paywall.
 
-1. **Make sure the paywall view controller deallocates before presenting it elsewhere**.
+2. **Make sure the paywall view controller deallocates before presenting it elsewhere**.
 
 If you have a paywall view controller presented somewhere and you try to present the same view controller elsewhere, you will get a crash. For example, you may have a paywall in a tab bar controller, and then you also try to present it modally. We plan on improving this, but currently it's your responsibility to ensure this doesn't happen.

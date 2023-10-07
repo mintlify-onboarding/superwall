@@ -14,9 +14,11 @@ However, if you want more control, you can pass in a `PurchaseController` when c
 
 A `PurchaseController` handles purchasing and restoring via protocol methods that you implement. You pass in your purchase controller when configuring the SDK:
 
-SwiftObjective-C
 
-`// MyPurchaseController.swift
+<CodeGroup>
+
+```swift Swift
+// MyPurchaseController.swift
 
 import SuperwallKit
 import StoreKit
@@ -45,9 +47,10 @@ final class MyPurchaseController: PurchaseController {
     return true // false
   }
 }
-`
+```
 
-`@import SuperwallKit;
+```swift Objective-C
+@import SuperwallKit;
 @import StoreKit;
 
 // MyPurchaseController
@@ -90,7 +93,9 @@ final class MyPurchaseController: PurchaseController {
 }
 
 @end
-`
+```
+
+</CodeGroup>
 
 Here’s what each method is responsible for:
 
@@ -105,9 +110,10 @@ Here’s what each method is responsible for:
 
 Pass your purchase controller to the `configure(apiKey:purchaseController:options:)` method:
 
-SwiftObjective-C
+<CodeGroup>
 
-`// AppDelegate.swift
+```swift Swift
+// AppDelegate.swift
 
 import UIKit
 import SuperwallKit
@@ -124,9 +130,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 }
-`
+```
 
-`// AppDelegate.m
+```swift Objective-C
+// AppDelegate.m
 
 @import SuperwallKit;
 
@@ -137,7 +144,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   [Superwall configureWithApiKey:@"MYAPIKEY" purchaseController:[MyPurchaseController sharedInstance] options:nil completion:nil];
   return YES;
 }
-`
+```
+
+</CodeGroup>
 
 ### Step 3: Keeping `subscriptionStatus` Up-To-Date
 
@@ -149,9 +158,10 @@ You **must** set `Superwall.shared.subscriptionStatus` every time the user's sub
 
 Here's how you might do this:
 
-SwiftObjective-C
+<CodeGroup>
 
-`import SuperwallKit
+```swift Swift
+import SuperwallKit
 
 // On app launch, when you are waiting to determine a user's subscription status.
 Superwall.shared.subscriptionStatus = .unknown
@@ -164,9 +174,10 @@ myService.subscriptionStatusDidChange {
    	Superwall.shared.subscriptionStatus = .inactive
   }
 }
-`
+```
 
-`@import SuperwallKit;
+```swift Objective-C
+@import SuperwallKit;
 
 // when you are waiting to determine a user's subscription status
 [Superwall sharedInstance].subscriptionStatus = SWKSubscriptionStatusUnknown;
@@ -179,8 +190,7 @@ myService.subscriptionStatusDidChange {
     [Superwall sharedInstance].subscriptionStatus = SWKSubscriptionStatusInactive;
   }
 }];
-`
+```
+</CodeGroup>
 
-> 📘
-> 
-> `subscriptionStatus` is cached between app launches
+<Note> `subscriptionStatus` is cached between app launches </Note>

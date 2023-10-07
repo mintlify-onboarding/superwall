@@ -17,16 +17,15 @@ There are seven different types of data tag:
 | data-pw-close           | Add anything as a value. It's ignored.                | Closes the paywall.                                                                                                                                                                                                                                                            |
 | data-pw-restore         | Add anything as a value. It's ignored.                | For restoring purchases, if you bought on a different device.                                                                                                                                                                                                                  |
 | data-pw-purchase        | Either primary, secondary, or tertiary.               | This relates to your primary, secondary, or tertiary product set up in the Superwall dashboard respectively. When the tagged element is tapped, it tells the SDK to initialize a purchase of the specified product.                                                            |
-| data-pw-open-url        | A valid url. E.g. <https://www.google.com\>.          | Normal href links do not work in a paywall. However, attaching this tag to an element opens the provided url.                                                                                                                                                                  |
+| data-pw-open-url        | A valid url. E.g.` <https://www.google.com\>.`          | Normal href links do not work in a paywall. However, attaching this tag to an element opens the provided url.                                                                                                                                                                  |
 | data-pw-open-deep-link  | A valid deep link url. E.g. fb://profile/33138223345. | Opens a deeplink from a button on a paywall.                                                                                                                                                                                                                                   |
 | data-pw-custom          | A name for a custom action                            | When the tagged element is tapped, the SDK calls its delegate method handleCustomPaywallAction(withName:). The value you provide is passed to the function, from which you can perform custom logic. Check out [Custom Paywall Buttons](/docs/custom-paywall-events) for more. |
 | data-pw-skip-inner-html | true                                                  | This prevents an element's text from being edited. It tells Paywall.js to keep looking into the element's children for more data-pw-var tags. This is useful when you want to hide a whole section or edit the style of a container, rather than edit its text.                |
 
 Here are a few examples of what data tags look like in the webpage HTML:
 
-HTML
-
-`<! –– A data tag specifying a templatable title.  ––>
+```HTML HTML
+<! –– A data tag specifying a templatable title.  ––>
 <h1 data-pw-var="title"></h1>
 
 <! –– A data tag specifying that the element should dismiss the paywall ––>
@@ -34,7 +33,7 @@ HTML
 
 <! –– Same as above ––>
 <div data-pw-close></div>
-`
+```
 
 ### Paywall.js
 
@@ -45,21 +44,19 @@ To get your webpage to be operable with Superwall, you need to add the Paywall.j
 We recommend using [Webflow](https://webflow.com). To add custom scripts to a Webflow webpage you need to have a paid Webflow account. However, our [clonable Webflow project](https://webflow.com/website/45-Paywall-Elements?ref=showcase-search&searchValue=superwall) already includes this script. Therefore, we recommend using the cloned project as the basis of your paywalls. In this project, we've also removed the Webflow watermark that is attached to all free Webflow webpages.
 
 If you'd like to add this script yourself, open the **Pages panel**, select the **cog wheel** next to the page name, then scroll down to the **Custom Code** section. In the **Inside head tag** section, add the following code:
+```HTML HTML
+<script async src="https://cdn.superwall.me/runtime/entrypoint.js"></script>
+```
 
-HTML
-
-`<script async src="https://cdn.superwall.me/runtime/entrypoint.js"></script>
-`
-
-> ❗️
-> 
-> Do not remove async
+<Warning>
+ Do not remove async
+ </Warning>
 
 ![](/images/bc9fb2b-57addcd-Screen_Shot_2021-08-17_at_12.23.07_AM.png "57addcd-Screen_Shot_2021-08-17_at_12.23.07_AM.png")
 
-> ℹ
-> 
-> Paywall.js is available to Superwall customers subject to the terms of the subscription agreement between Superwall and the customer, and is not available as an open-source project.
+<Note>
+Paywall.js is available to Superwall customers subject to the terms of the subscription agreement between Superwall and the customer, and is not available as an open-source project.
+</Note>
 
 ### Game Controller
 
@@ -71,31 +68,29 @@ To attach an on-screen button to a game controller button, simply add the `data-
 
 For example, the following button would purchase the primary product if a user pressed the "A" button on their game controller. 
 
-HTML
-
-`<div data-pw-purchase="primary" data-pw-gc-button="A Button">Purchase</div>
-`
+```HTML HTML
+<div data-pw-purchase="primary" data-pw-gc-button="A Button">Purchase</div>
+```
 
 #### Styling
 
 To allow users to style buttons, we will add and remove classes during the button press event. When the game controller input becomes depressed, we add `pw-gc-press`. When the button is let up, we will remove that class. Many users will use these classes to slightly shirk the button on press and restore it on press end. 
 
-CSS
-
-`.pw-gc-press {
+```CSS CSS
+.pw-gc-press {
 	opacity: 0.9;
 	transition: all .2s ease-in-out;
 	transform: scale(0.93);
 }
-`
+```
 
 #### Advanced
 
 Some users may want to take other actions based on the game controller input so we will automatically forward all game controller events to a function on the window if it is defined. 
 
-TypeScript
 
-`type DirectionalInput = {
+```TypeScript TypeScript
+type DirectionalInput = {
   controller_element: string
   directional: true
   x: number
@@ -114,4 +109,4 @@ export type Input =
 window.onGameControllerInput = (data: Input) => {
     // Do anything you want with the input!
 }
-`
+```

@@ -6,12 +6,12 @@
     },
     "favicon": "/favicon.png",
     "colors": {
-      "primary": "#74FFF1",
-      "light": "#94FFF4",
-      "dark": "#74FFF1"
+      "primary": "#00E2CC",
+      "light": "#2DFCE7",
+      "dark": "#00E2CC"
     },
     "modeToggle": {
-        "default": "dark",
+        "default": "light",
         "isHidden": true
     },
     "topbarCtaButton": {
@@ -58,12 +58,49 @@
                   "installation-via-spm",
                   "installation-via-cocoapods"
                 ]
-              }
+              },
+              {
+                "group": "Configuring the SDK",
+                "pages": [
+                  "configuring-the-sdk",
+                  "advanced-configuration",
+                  "using-revenuecat",
+                  "using-superwalloptions"
+                ]
+              },
+              {
+                "group": "User Management",
+                "pages": [
+                  "identity-management",
+                  "setting-user-properties"
+                ]
+              },
+              {
+                "group": "Showing Paywalls",
+                "pages": [
+                  "feature-gating",
+                  "presenting"
+                ]
+              },
+              {
+                "group": "3rd Party Analytics",
+                "pages": [
+                  "3rd-party-analytics",
+                  "tracking-analytics",
+                  "cohorting-in-3rd-party-tools"
+                ]
+              },
+              "in-app-paywall-previews",
+              "custom-paywall-events",
+              "game-controller-support",
+              "testing-purchases",
+              "troubleshooting"
             ]
           },
           {
             "group": "SDK Reference",
             "pages": [
+              "ios",
               "migrating-to-v3"
             ]
           },
@@ -75,7 +112,12 @@
                 "group": "Creating Paywalls",
                 "pages": [
                   "configuring-a-paywall",
-                  "paywall-settings-sidebar"
+                  "paywall-settings-sidebar",
+                  "products",
+                  "layout-tab",
+                  "interactive-paywall-preview",
+                  "localization", 
+                  "advanced-paywall-creation"             
                 ]
               },
               {
